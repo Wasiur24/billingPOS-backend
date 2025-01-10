@@ -14,7 +14,11 @@ const productSchema = new mongoose.Schema({
         ref: 'Category',  // Now references the Category model
         required: true,
     },
-
+   mrpprice:{
+    type:Number,
+    required:false,
+    
+   },
     purchasePrice: {
         type: Number,
         required: true,
