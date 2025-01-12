@@ -359,9 +359,38 @@ const getAllProducts = async (req, res) => {
 //         );
 //     });
 // };
+const deleteProduct = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Find the product to delete
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Remove the product from the supplier's productsSupplied list
+        const supplier = await Supplier.findById(product.supplier);
+        if (supplier) {
+            supplier.productsSupplied = supplier.productsSupplied.filter(
+                (productInfo) => productInfo.productId.toString() !== product._id.toString()
+            );
+            await supplier.save();
+        }
+
+        // Delete the product
+        await Product.findByIdAndDelete(id);
+
+        res.status(200).json({ message: 'Product deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting product', error: error.message });
+    }
+};
+
 
 module.exports = {
     addProduct,
     updateProduct,
     getAllProducts,
+    deleteProduct,
 };
