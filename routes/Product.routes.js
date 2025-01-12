@@ -1,5 +1,5 @@
 const express = require('express');
-const { addProduct, updateProduct, getAllProducts, deleteProduct } = require('../controllers/Product.controller');
+const { addProduct, updateProduct, getAllProducts, deleteProduct ,getAllProductsCategory } = require('../controllers/Product.controller');
 const router = express.Router();
 
 // Add a new product
@@ -10,6 +10,7 @@ router.patch('/update/:id', updateProduct);
 
 // Get all products
 router.get('/', getAllProducts);
+router.get('/getAllProductsCategory', getAllProductsCategory);
 // router.delete('/:id',  deleteProduct);
 router.delete('/:id', deleteProduct);
 

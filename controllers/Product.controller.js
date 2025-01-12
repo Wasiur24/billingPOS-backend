@@ -138,7 +138,7 @@ const addProduct = async (req, res) => {
                 name,
                 description,
                 category, // Category should be a name here
-                price,
+                mrpprice,
                 purchasePrice,
                 sellingPrice,
                 quantity,
@@ -181,7 +181,7 @@ const addProduct = async (req, res) => {
                 name,
                 description,
                 category: categoryDoc._id, // Use category _id
-                price,
+                mrpprice,
                 purchasePrice,
                 sellingPrice,
                 quantity,
@@ -274,7 +274,7 @@ const updateProduct = async (req, res) => {
         name,
         description,
         category,
-        price,
+        mrpprice,
         purchasePrice,
         sellingPrice,
         quantity,
@@ -300,7 +300,7 @@ const updateProduct = async (req, res) => {
         product.name = name || product.name;
         product.description = description || product.description;
         product.category = category || product.category;
-        product.price = price || product.price;
+        product.mrpprice = mrpprice || product.mrpprice;
         product.purchasePrice = purchasePrice || product.purchasePrice;
         product.sellingPrice = sellingPrice || product.sellingPrice;
         product.quantity = quantity || product.quantity;
@@ -321,6 +321,23 @@ const updateProduct = async (req, res) => {
 const getAllProducts = async (req, res) => {
     try {
         const products = await Product.find();
+
+        // Return products with their respective barcode images
+        const productsWithBarcodes = products.map(product => ({
+            ...product.toObject(),
+            barcode: product.barcode || null,  // Ensure barcode is included
+        }));
+
+        res.status(200).json(productsWithBarcodes);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching products', error: error.message });
+    }
+};
+
+const getAllProductsCategory = async (req, res) => {
+    try {
+        const products = await Product.find()
+            .populate('category')  // This will populate the category data
 
         // Return products with their respective barcode images
         const productsWithBarcodes = products.map(product => ({
@@ -393,4 +410,5 @@ module.exports = {
     updateProduct,
     getAllProducts,
     deleteProduct,
+    getAllProductsCategory,
 };
