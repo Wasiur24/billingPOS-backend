@@ -5,7 +5,7 @@ const {
     updatePurchase,
     getAllPurchases,
     getPurchaseById,
-    deletePurchase
+    deletePurchase,
 } = require('../controllers/Purchase.controller'); // Ensure path to controller is correct
 
 // Route to add a purchase
@@ -19,6 +19,7 @@ router.get('/all', getAllPurchases);
 
 // Route to get a purchase by ID
 router.get('/:id', getPurchaseById);
+
 router.delete('/:id', deletePurchase);
 
 module.exports = router;

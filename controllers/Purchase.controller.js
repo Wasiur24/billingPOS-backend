@@ -94,19 +94,33 @@ const getPurchaseById = async (req, res) => {
         res.status(500).json({ message: 'Error fetching purchase', error: error.message });
     }
 };
+
+
 const deletePurchase = async (req, res) => {
     const { id } = req.params;
 
     try {
+        // Find the product to delete
         const purchase = await Purchase.findById(id);
         if (!purchase) {
-            return res.status(404).json({ message: 'Purchase not found' });
+            return res.status(404).json({ message: 'Product not found' });
         }
 
+        // Remove the product from the supplier's productsSupplied list
+        const supplier = await Supplier.findById(purchase.supplier);
+        if (supplier) {
+            supplier.purchasesSupplied = supplier.purchaseSupplied.filter(
+                (purchaseInfo) => purchaseInfo.purchaseId.toString() !== purchase._id.toString()
+            );
+            await supplier.save();
+        }
+
+        // Delete the product
         await Purchase.findByIdAndDelete(id);
+
         res.status(200).json({ message: 'Purchase deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting purchase', error: error.message });
+        res.status(500).json({ message: 'Error deleting Purchase', error: error.message });
     }
 };
 

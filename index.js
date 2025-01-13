@@ -80,7 +80,7 @@ app.get('/', (req, res) => {
 connectDB();
 
 // Use process.env.PORT, fallback to 5000 if not set
-const port = process.env.PORT || 6000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server listening on port ${port}!`);
 });
