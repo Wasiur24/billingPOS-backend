@@ -94,10 +94,26 @@ const getPurchaseById = async (req, res) => {
         res.status(500).json({ message: 'Error fetching purchase', error: error.message });
     }
 };
+const deletePurchase = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const purchase = await Purchase.findById(id);
+        if (!purchase) {
+            return res.status(404).json({ message: 'Purchase not found' });
+        }
+
+        await Purchase.findByIdAndDelete(id);
+        res.status(200).json({ message: 'Purchase deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting purchase', error: error.message });
+    }
+};
 
 module.exports = {
     addPurchase,
     updatePurchase,
     getAllPurchases,
     getPurchaseById,
+    deletePurchase,
 };
