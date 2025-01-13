@@ -333,6 +333,7 @@ const getAllProducts = async (req, res) => {
         res.status(500).json({ message: 'Error fetching products', error: error.message });
     }
 };
+//gfjkjdfghjkldfg
 
 const getAllProductsCategory = async (req, res) => {
     try {
