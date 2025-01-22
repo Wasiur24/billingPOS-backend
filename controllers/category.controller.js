@@ -2,7 +2,7 @@ const Category = require('../models/category.model');
 
 // Controller to create a new category
 const createCategory = async (req, res) => {
-    const { name, description } = req.body;
+    const { name, description,gstnumber } = req.body;
 
     try {
         // Check if the category already exists
