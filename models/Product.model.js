@@ -59,7 +59,7 @@ const productSchema = new mongoose.Schema({
     },
     weight: {
         type: Number, // Weight in kilograms or grams (you can specify in documentation)
-        required: true,
+        required: false,
     },
 }, { timestamps: true });
 
