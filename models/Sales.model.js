@@ -49,15 +49,16 @@ const salesSchema = new mongoose.Schema({
     paymentMethod: {
         type: String,
         enum: ['Cash', 'Credit Card', 'Debit Card', 'UPI', 'Other'],
-        default: 'Cash',
+        default: 'UPI',
     },
     customerName: { type: String, default: 'Anonymous' },
     customerContact: {
         type: String,
-        validate: {
-            validator: (v) => /^\d{10}$/.test(v),
-            message: (props) => `${props.value} is not a valid contact number!`,
-        },
+        // validate: {
+        //     validator: (v) => /^\d{10}$/.test(v),
+        //     message: (props) => `${props.value} is not a valid contact number!`,
+        // },
+        required: false,
     },
     billNo: { type: Number },
     cgstAmount: { type: Number, default: 0 },

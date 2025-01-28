@@ -13,121 +13,6 @@ const { createCanvas } = require('canvas'); // Used for image rendering
 
 
 
-// const createSale = async (req, res) => {
-//     const { products, paymentMethod, customerName, customerContact } = req.body;
-
-//     try {
-//         if (!products || !Array.isArray(products) || products.length === 0) {
-//             return res.status(400).json({ message: 'Products array is required.' });
-//         }
-
-//         let totalSaleAmount = 0;
-//         const productUpdates = [];
-//         const productDetails = [];
-
-//         // Loop through products to check stock, calculate total and update product quantity
-//         for (const item of products) {
-//             const { sku, quantitySold } = item;
-
-//             let product = await Product.findOne({ sku });
-
-//             if (!product) {
-//                 return res.status(404).json({ message: `Product not found for sku ${sku}.` });
-//             }
-
-//             if (product.quantity < quantitySold) {
-//                 return res.status(400).json({
-//                     message: `Insufficient stock for product ${product.name || product.sku}.`,
-//                 });
-//             }
-
-//             const productTotal = product.sellingPrice * quantitySold;
-//             totalSaleAmount += productTotal;
-
-//             product.quantity -= quantitySold;
-//             productUpdates.push(product.save());
-
-//             productDetails.push({
-//                 productId: product._id,
-//                 sku: product.sku,
-//                 productName: product.name,  // Add product name
-//                 quantitySold,
-//                 totalAmount: productTotal,
-//                 weight: product.weight,
-//             });
-//         }
-
-//         // Create the sale record
-//         const sale = await Sales.create({
-//             products: productDetails,
-//             totalSaleAmount,
-//             paymentMethod: paymentMethod || 'Cash',
-//             customerName: customerName || 'Anonymous',
-//             customerContact: customerContact || 'N/A',
-//         });
-
-//         await Promise.all(productUpdates); // Update all products after sale
-
-//         // Receipt Saving Logic
-//         const canvas = createCanvas(576, 800); // Create a canvas for receipt
-//         const ctx = canvas.getContext('2d');
-
-//         ctx.fillStyle = '#FFFFFF';
-//         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-//         ctx.fillStyle = '#000000';
-//         ctx.font = '20px Arial';
-//         ctx.fillText('MY STORE', 20, 40);
-//         ctx.fillText('Address Line 1', 20, 70);
-//         ctx.fillText('Address Line 2', 20, 100);
-//         ctx.fillText('Phone: 1234567890', 20, 130);
-//         ctx.fillText('-------------------------', 20, 160);
-//         ctx.fillText(`Date: ${new Date(sale.saleDate).toLocaleString()}`, 20, 190);
-//         ctx.fillText(`Customer: ${customerName || 'Anonymous'}`, 20, 220);
-//         ctx.fillText(`Contact: ${customerContact || 'N/A'}`, 20, 250);
-//         ctx.fillText('-------------------------', 20, 280);
-
-//         let yPosition = 310;
-
-//         // Loop through product details to display product name, SKU, quantity sold and total
-//         products.forEach((item, index) => {
-//             const productDetail = productDetails[index];
-//             ctx.fillText(
-//                 `${productDetail.productName} (${productDetail.sku}) x${productDetail.quantitySold} - ₹${productDetail.totalAmount.toFixed(2)}`,
-//                 20,
-//                 yPosition
-//             );
-//             yPosition += 30;
-//         });
-
-//         ctx.fillText('-------------------------', 20, yPosition);
-//         yPosition += 30;
-//         ctx.fillText(`Total: ₹${totalSaleAmount.toFixed(2)}`, 20, yPosition);
-//         yPosition += 30;
-//         ctx.fillText(`Payment: ${paymentMethod}`, 20, yPosition);
-//         yPosition += 30;
-//         ctx.fillText('-------------------------', 20, yPosition);
-//         yPosition += 30;
-//         ctx.fillText('Thank you for your purchase!', 20, yPosition);
-
-//         // Save the receipt as an image in public/barcodes
-//         const outputPath = path.join(__dirname, '../public/receipts', `receipt_${sale._id}.png`);
-//         const buffer = canvas.toBuffer('image/png');
-//         fs.writeFileSync(outputPath, buffer);
-
-//         res.status(201).json({
-//             message: 'Sale recorded successfully.',
-//             saleDate: sale.saleDate,
-//             totalSaleAmount,
-//             sale,
-//             receiptPath: `/public/receipts/receipt_${sale._id}.png`,
-//         });
-//     } catch (error) {
-//         console.error('Error creating sale:', error.message);
-//         res.status(500).json({ message: 'Server error', error: error.message });
-//     }
-// };
-// In Sales.controller.js, update the createSale function
 
 const createSale = async (req, res) => {
     const { products, paymentMethod, customerName, customerContact } = req.body;
@@ -193,7 +78,7 @@ const createSale = async (req, res) => {
         const sale = await Sales.create({
             products: productDetails,
             totalSaleAmount,
-            paymentMethod: paymentMethod || 'Cash',
+            paymentMethod: paymentMethod || 'UPI',
             customerName: customerName || 'Anonymous',
             customerContact: customerContact || 'N/A',
             cgstAmount: totalCGST,
