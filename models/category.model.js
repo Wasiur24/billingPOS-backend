@@ -8,11 +8,12 @@ const categorySchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true,
+        required: false,
     },
     gstnumber: {    
         type: Number,
-        required: true,
+        required: false,
+        default: 0,
     }
 }, { timestamps: true });
 
