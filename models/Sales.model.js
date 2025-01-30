@@ -40,7 +40,7 @@ const salesSchema = new mongoose.Schema({
             quantitySold: { type: Number, required: true },
             sellingPrice: { type: Number, required: true },
             mrpprice: { type: Number, required: true },
-            gstnumber: { type: Number, required: true },
+            gstnumber: { type: Number, required: false },
             totalAmount: { type: Number, required: true },
         },
     ],
@@ -51,7 +51,7 @@ const salesSchema = new mongoose.Schema({
         enum: ['Cash', 'Credit Card', 'Debit Card', 'UPI', 'Other'],
         default: 'UPI',
     },
-    customerName: { type: String, default: 'Anonymous' },
+    customerName: { type: String, default: 'Anonymous',required: false},
     customerContact: {
         type: String,
         // validate: {
