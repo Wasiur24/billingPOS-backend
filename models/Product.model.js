@@ -60,6 +60,7 @@ const productSchema = new mongoose.Schema(
     },
     expiryDate: {
       type: Date,
+      required: false,
     },
     weight: {
       type: Number, // Weight in kilograms or grams (you can specify in documentation)
