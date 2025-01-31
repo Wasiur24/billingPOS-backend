@@ -14,8 +14,121 @@ const { createCanvas } = require('canvas'); // Used for image rendering
 
 
 
+// const createSale = async (req, res) => {
+//     const { products, paymentMethod, customerName, customerContact } = req.body;
+
+//     try {
+//         if (!products || !Array.isArray(products) || products.length === 0) {
+//             return res.status(400).json({ message: 'Products array is required.' });
+//         }
+
+//         let totalSaleAmount = 0;
+//         const productUpdates = [];
+//         const productDetails = [];
+//         let totalCGST = 0;
+//         let totalSGST = 0;
+//         let savedAmount = 0;
+
+//         // Calculate GST and saved amount
+//         for (const item of products) {
+//             const { sku, quantitySold, name, sellingPrice, mrpprice, gstnumber } = item;
+
+//             let product = await Product.findOne({ sku });
+
+//             if (!product) {
+//                 return res.status(404).json({ message: `Product not found for sku ${sku}.` });
+//             }
+
+//             if (product.quantity < quantitySold) {
+//                 return res.status(400).json({
+//                     message: `Insufficient stock for product ${name || sku}.`,
+//                 });
+//             }
+
+//             const productTotal = sellingPrice * quantitySold;
+//             totalSaleAmount += productTotal;
+
+//             // Calculate GST
+//             if (gstnumber) {
+//                 const gstRate = gstnumber / 2;
+//                 const gstAmount = (productTotal * gstRate) / 100;
+//                 totalCGST += gstAmount;
+//                 totalSGST += gstAmount;
+//             }
+
+//             // Calculate saved amount
+//             savedAmount += (mrpprice - sellingPrice) * quantitySold;
+
+//             product.quantity -= quantitySold;
+//             productUpdates.push(product.save());
+
+//             productDetails.push({
+//                 productId: product._id,
+//                 sku,
+//                 name,
+//                 quantitySold,
+//                 sellingPrice,
+//                 mrpprice,
+//                 gstnumber,
+//                 totalAmount: productTotal,
+//             });
+//         }
+
+//         // Create the sale record with all details
+//         const sale = await Sales.create({
+//             products: productDetails,
+//             totalSaleAmount,
+//             paymentMethod: paymentMethod || 'UPI',
+//             customerName: customerName || 'Anonymous',
+//             customerContact: customerContact || 'N/A',
+//             cgstAmount: totalCGST,
+//             sgstAmount: totalSGST,
+//             savedAmount,
+//         });
+
+//         await Promise.all(productUpdates);
+
+//         res.status(201).json({
+//             message: 'Sale recorded successfully.',
+//             sale,
+//         });
+//     } catch (error) {
+//         console.error('Error creating sale:', error.message);
+//         res.status(500).json({ message: 'Server error', error: error.message });
+//     }
+// };
+
+// Update getSaleById to populate all necessary fields
+const getSaleById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const sale = await Sales.findById(id)
+            .populate('products.productId');
+
+        if (!sale) {
+            return res.status(404).json({ message: 'Sale not found' });
+        }
+
+        res.status(200).json(sale);
+    } catch (error) {
+        console.error('Error fetching sale by ID:', error.message);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+
+const getAllSales = async (req, res) => {
+    try {
+        const sales = await Sales.find().populate('products.productId');
+        res.status(200).json(sales);
+    } catch (error) {
+        console.error('Error fetching all sales:', error.message);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
 const createSale = async (req, res) => {
-    const { products, paymentMethod, customerName, customerContact } = req.body;
+    const { products, paymentMethod, customerName, customerContact, cashReceived, changeAmount } = req.body;
 
     try {
         if (!products || !Array.isArray(products) || products.length === 0) {
@@ -84,6 +197,8 @@ const createSale = async (req, res) => {
             cgstAmount: totalCGST,
             sgstAmount: totalSGST,
             savedAmount,
+            cashReceived: cashReceived || 0,
+            changeAmount: changeAmount || 0,
         });
 
         await Promise.all(productUpdates);
@@ -98,57 +213,8 @@ const createSale = async (req, res) => {
     }
 };
 
-// Update getSaleById to populate all necessary fields
-const getSaleById = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const sale = await Sales.findById(id)
-            .populate('products.productId');
-
-        if (!sale) {
-            return res.status(404).json({ message: 'Sale not found' });
-        }
-
-        res.status(200).json(sale);
-    } catch (error) {
-        console.error('Error fetching sale by ID:', error.message);
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
-};
-
-
-const getAllSales = async (req, res) => {
-    try {
-        const sales = await Sales.find().populate('products.productId');
-        res.status(200).json(sales);
-    } catch (error) {
-        console.error('Error fetching all sales:', error.message);
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
-};
-
-// // Get Sale by ID
-// const getSaleById = async (req, res) => {
-//     const { id } = req.params;
-
-//     try {
-//         const sale = await Sales.findById(id).populate('products.productId');
-
-//         if (!sale) {
-//             return res.status(404).json({ message: 'Sale not found' });
-//         }
-
-//         res.status(200).json(sale);
-//     } catch (error) {
-//         console.error('Error fetching sale by ID:', error.message);
-//         res.status(500).json({ message: 'Server error', error: error.message });
-//     }
-// };
-
-// Create Sale by SKU
 const createSaleBySKU = async (req, res) => {
-    const { sku, quantitySold, paymentMethod, customerName, customerContact } = req.body;
+    const { sku, quantitySold, paymentMethod, customerName, customerContact, cashReceived, changeAmount } = req.body;
 
     try {
         const product = await Product.findOne({ sku });
@@ -172,9 +238,12 @@ const createSaleBySKU = async (req, res) => {
                     totalAmount,
                 },
             ],
+            totalSaleAmount: totalAmount,
             paymentMethod: paymentMethod || 'Cash',
             customerName: customerName || 'Anonymous',
             customerContact: customerContact || 'N/A',
+            cashReceived: cashReceived || 0,
+            changeAmount: changeAmount || 0,
         });
 
         await sale.save();
@@ -191,6 +260,70 @@ const createSaleBySKU = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+// // Get Sale by ID
+// const getSaleById = async (req, res) => {
+//     const { id } = req.params;
+
+//     try {
+//         const sale = await Sales.findById(id).populate('products.productId');
+
+//         if (!sale) {
+//             return res.status(404).json({ message: 'Sale not found' });
+//         }
+
+//         res.status(200).json(sale);
+//     } catch (error) {
+//         console.error('Error fetching sale by ID:', error.message);
+//         res.status(500).json({ message: 'Server error', error: error.message });
+//     }
+// };
+
+// Create Sale by SKU
+// const createSaleBySKU = async (req, res) => {
+//     const { sku, quantitySold, paymentMethod, customerName, customerContact } = req.body;
+
+//     try {
+//         const product = await Product.findOne({ sku });
+
+//         if (!product) {
+//             return res.status(404).json({ message: 'Product not found' });
+//         }
+
+//         if (product.quantity < quantitySold) {
+//             return res.status(400).json({ message: 'Insufficient stock available' });
+//         }
+
+//         const totalAmount = quantitySold * product.sellingPrice;
+
+//         const sale = new Sales({
+//             products: [
+//                 {
+//                     productId: product._id,
+//                     sku: product.sku,
+//                     quantitySold,
+//                     totalAmount,
+//                 },
+//             ],
+//             paymentMethod: paymentMethod || 'Cash',
+//             customerName: customerName || 'Anonymous',
+//             customerContact: customerContact || 'N/A',
+//         });
+
+//         await sale.save();
+
+//         product.quantity -= quantitySold;
+//         await product.save();
+
+//         res.status(201).json({
+//             message: 'Sale recorded successfully.',
+//             sale,
+//         });
+//     } catch (error) {
+//         console.error('Error creating sale by SKU:', error.message);
+//         res.status(500).json({ message: 'Server error', error: error.message });
+//     }
+// };
 
 // Get Sales by SKU
 const getSalesBySKU = async (req, res) => {
