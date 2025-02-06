@@ -101,6 +101,54 @@ const deleteUser = async (req, res) => {
 };
 
 // User login
+// const loginUser = async (req, res) => {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//         return res.status(400).json({ message: 'Email and password are required' });
+//     }
+
+//     try {
+//         const user = await User.findOne({ email });
+//         if (!user) {
+//             return res.status(404).json({ message: 'User not found' });
+//         }
+
+//         const isMatch = await bcrypt.compare(password.trim(), user.password.trim());
+//         if (!isMatch) {
+//             return res.status(401).json({ message: 'Invalid credentials' });
+//         }
+
+//         // Generate JWT token
+//         const token = jwt.sign(
+//             {
+//                 id: user._id,
+//                 role: user.role, // Include role in the token
+//             },
+//             process.env.JWT_SECRET,
+//             { expiresIn: process.env.JWT_SECRET_EXPIRY }
+//         );
+
+//         res.status(200).json({
+//             message: 'Login successful',
+//             token,
+//             user: {
+//                 id: user._id,
+//                 name: user.name,
+//                 email: user.email,
+//                 phone: user.phone,
+//                 address: user.address,
+//                 pincode: user.pincode,
+//                 city: user.city,
+//                 state: user.state,
+//                 role: user.role,
+//             },
+//         });
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error logging in', error: error.message });
+//     }
+// };
+
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -119,35 +167,22 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Generate JWT token
         const token = jwt.sign(
-            {
-                id: user._id,
-                role: user.role, // Include role in the token
-            },
+            { id: user._id, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_SECRET_EXPIRY }
         );
 
         res.status(200).json({
             message: 'Login successful',
-            token,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                address: user.address,
-                pincode: user.pincode,
-                city: user.city,
-                state: user.state,
-                role: user.role,
-            },
+            token,  // Send token to be stored in sessionStorage
+            user: { id: user._id, name: user.name, role: user.role }
         });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error: error.message });
     }
 };
+
 
 // Get user profile
 const getProfile = async (req, res) => {
