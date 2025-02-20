@@ -168,6 +168,7 @@ const updateProduct = async (req, res) => {
     manufacturingDate,
     expiryDate,
     weight,
+    discountPercentage, // Extract as is
   } = req.body;
 
   try {
@@ -195,6 +196,11 @@ const updateProduct = async (req, res) => {
     product.expiryDate = expiryDate || product.expiryDate;
     product.weight = weight || product.weight;
 
+    // Ensure discountPercentage is updated correctly
+    if (discountPercentage !== undefined) {
+      product.discountPercentage = Number(discountPercentage);
+    }
+
     const updatedProduct = await product.save();
     res.status(200).json({
       message: "Product updated successfully",
@@ -206,6 +212,7 @@ const updateProduct = async (req, res) => {
       .json({ message: "Error updating product", error: error.message });
   }
 };
+
 
 // Get All Products Controller
 const getAllProducts = async (req, res) => {
