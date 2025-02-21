@@ -4,18 +4,18 @@
 const mongoose = require('mongoose');
 
 const supplierSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    contactPerson: { type: String, required: true },
-    phone: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    address: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    pincode: { type: String, required: true },
-    country: { type: String, required: true },
+    name: { type: String,  },
+    contactPerson: { type: String },
+    phone: { type: String  },
+    email: { type: String, unique: true },
+    address: { type: String},
+    city: { type: String},
+    state: { type: String },
+    pincode: { type: String },
+    country: { type: String },
     productsSupplied: [{
-        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-        productName: { type: String, required: true },
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product'},
+        productName: { type: String},
     }],
 }, { timestamps: true });
 

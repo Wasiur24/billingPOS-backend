@@ -153,6 +153,69 @@ const generateBarcodeAndSave = async (sku) => {
   });
 };
 
+  // const updateProduct = async (req, res) => {
+  //   const { id } = req.params;
+  //   const {
+  //     name,
+  //     description,
+  //     category,
+  //     mrpprice,
+  //     purchasePrice,
+  //     sellingPrice,
+  //     quantity,
+  //     supplier=null,
+  //     sku,
+  //     manufacturingDate,
+  //     expiryDate,
+  //     weight,
+  //     discountPercentage, // Extract as is
+  //   } = req.body;
+
+  //   try {
+  //     const product = await Product.findById(id);
+  //     if (!product) {
+  //       return res.status(404).json({ message: "Product not found" });
+  //     }
+
+  //     // Check if SKU changed, and regenerate the barcode if needed
+  //     if (sku && sku !== product.sku) {
+  //       product.barcode = await generateBarcode(sku); // Regenerate barcode for the updated SKU
+  //     }
+
+  //     // Update product fields
+  //     product.name = name || product.name;
+  //     product.description = description || product.description;
+  //     product.category = category || product.category;
+  //     product.mrpprice = mrpprice || product.mrpprice;
+  //     product.purchasePrice = purchasePrice || product.purchasePrice;
+  //     product.sellingPrice = sellingPrice || product.sellingPrice;
+  //     product.quantity = quantity || product.quantity;
+  //     product.supplier = supplier || product.supplier|| null;
+  //     product.sku = sku || product.sku;
+  //     product.manufacturingDate = manufacturingDate || product.manufacturingDate;
+  //     product.expiryDate = expiryDate || product.expiryDate;
+  //     product.weight = weight || product.weight;
+
+  //     // Ensure discountPercentage is updated correctly
+  //     if (discountPercentage !== undefined) {
+  //       product.discountPercentage = Number(discountPercentage);
+  //     }
+
+  //     const updatedProduct = await product.save();
+  //     res.status(200).json({
+  //       message: "Product updated successfully",
+  //       product: updatedProduct,
+  //     });
+  //   } catch (error) {
+  //     res
+  //       .status(500)
+  //       .json({ message: "Error updating product", error: error.message });
+  //   }
+  // };
+
+
+// Get All Products Controller
+
 const updateProduct = async (req, res) => {
   const { id } = req.params;
   const {
@@ -168,7 +231,7 @@ const updateProduct = async (req, res) => {
     manufacturingDate,
     expiryDate,
     weight,
-    discountPercentage, // Extract as is
+    discountPercentage,
   } = req.body;
 
   try {
@@ -182,24 +245,22 @@ const updateProduct = async (req, res) => {
       product.barcode = await generateBarcode(sku); // Regenerate barcode for the updated SKU
     }
 
-    // Update product fields
-    product.name = name || product.name;
-    product.description = description || product.description;
-    product.category = category || product.category;
-    product.mrpprice = mrpprice || product.mrpprice;
-    product.purchasePrice = purchasePrice || product.purchasePrice;
-    product.sellingPrice = sellingPrice || product.sellingPrice;
-    product.quantity = quantity || product.quantity;
-    product.supplier = supplier || product.supplier;
-    product.sku = sku || product.sku;
-    product.manufacturingDate = manufacturingDate || product.manufacturingDate;
-    product.expiryDate = expiryDate || product.expiryDate;
-    product.weight = weight || product.weight;
+    // Update product fields (retain old values if not provided, store null if explicitly set)
+    product.name = name !== undefined ? name : product.name;
+    product.description = description !== undefined ? description : product.description;
+    product.category = category !== undefined ? category : product.category;
+    product.mrpprice = mrpprice !== undefined ? mrpprice : product.mrpprice;
+    product.purchasePrice = purchasePrice !== undefined ? purchasePrice : product.purchasePrice;
+    product.sellingPrice = sellingPrice !== undefined ? sellingPrice : product.sellingPrice;
+    product.quantity = quantity !== undefined ? quantity : product.quantity;
+    product.supplier = supplier !== undefined ? supplier : product.supplier;
+    product.sku = sku !== undefined ? sku : product.sku;
+    product.manufacturingDate = manufacturingDate !== undefined ? manufacturingDate : product.manufacturingDate;
+    product.expiryDate = expiryDate !== undefined ? expiryDate : product.expiryDate;
+    product.weight = weight !== undefined ? weight : product.weight;
 
     // Ensure discountPercentage is updated correctly
-    if (discountPercentage !== undefined) {
-      product.discountPercentage = Number(discountPercentage);
-    }
+    product.discountPercentage = discountPercentage !== undefined ? Number(discountPercentage) : product.discountPercentage;
 
     const updatedProduct = await product.save();
     res.status(200).json({
@@ -207,14 +268,11 @@ const updateProduct = async (req, res) => {
       product: updatedProduct,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating product", error: error.message });
+    res.status(500).json({ message: "Error updating product", error: error.message });
   }
 };
 
 
-// Get All Products Controller
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find();

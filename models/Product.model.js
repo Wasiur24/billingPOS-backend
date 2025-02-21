@@ -13,7 +13,7 @@ const productSchema = new mongoose.Schema(
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category", // Now references the Category model
-      required: true,
+      
     },
     mrpprice: {
       type: Number,
@@ -38,7 +38,7 @@ const productSchema = new mongoose.Schema(
     supplier: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Supplier",
-      required: false,
+   
     },
     sku: {
       type: String,
